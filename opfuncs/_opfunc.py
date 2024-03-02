@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 __all__ = [
-    "SUPPORTED_OPERATORS",
-    "opfunc",
+    'SUPPORTED_OPERATORS',
+    'opfunc',
 ]
 
 import functools
@@ -19,9 +19,9 @@ from typing import TypeVar
 from typing import overload
 from collections.abc import Mapping
 
-FuncParams = ParamSpec("FuncParams")
-OpParams = ParamSpec("OpParams")
-T = TypeVar("T")
+FuncParams = ParamSpec('FuncParams')
+OpParams = ParamSpec('OpParams')
+T = TypeVar('T')
 
 Func = Callable[FuncParams, T]
 
@@ -40,28 +40,28 @@ class _OpData(NamedTuple):
 
 
 OPERATOR_DATA = [
-    _OpData("and", operator.and_, "&"),
-    _OpData("or", operator.or_, "|"),
-    _OpData("xor", operator.xor, "^"),
-    _OpData("add", operator.add, "+"),
-    _OpData("sub", operator.sub, "-"),
-    _OpData("mul", operator.mul, "*"),
-    _OpData("matmul", operator.matmul, "@"),
-    _OpData("truediv", operator.truediv, "/"),
-    _OpData("floordiv", operator.floordiv, "//"),
-    _OpData("mod", operator.mod, "%"),
-    _OpData("divmod", divmod, "divmod()"),
-    _OpData("pow", pow, "** or pow()"),
-    _OpData("lshift", operator.lshift, "<<"),
-    _OpData("rshift", operator.rshift, ">>"),
-    _OpData("neg", operator.neg, "-()"),
-    _OpData("pos", operator.pos, "+()"),
-    _OpData("abs", operator.abs, "abs()"),
-    _OpData("invert", operator.invert, "~"),
-    _OpData("round", round, "round()"),
-    _OpData("trunc", math.trunc, "math.trunc()"),
-    _OpData("floor", math.floor, "math.floor()"),
-    _OpData("ceil", math.ceil, "math.ceil()"),
+    _OpData('and', operator.and_, '&'),
+    _OpData('or', operator.or_, '|'),
+    _OpData('xor', operator.xor, '^'),
+    _OpData('add', operator.add, '+'),
+    _OpData('sub', operator.sub, '-'),
+    _OpData('mul', operator.mul, '*'),
+    _OpData('matmul', operator.matmul, '@'),
+    _OpData('truediv', operator.truediv, '/'),
+    _OpData('floordiv', operator.floordiv, '//'),
+    _OpData('mod', operator.mod, '%'),
+    _OpData('divmod', divmod, 'divmod()'),
+    _OpData('pow', pow, '** or pow()'),
+    _OpData('lshift', operator.lshift, '<<'),
+    _OpData('rshift', operator.rshift, '>>'),
+    _OpData('neg', operator.neg, '-()'),
+    _OpData('pos', operator.pos, '+()'),
+    _OpData('abs', operator.abs, 'abs()'),
+    _OpData('invert', operator.invert, '~'),
+    _OpData('round', round, 'round()'),
+    _OpData('trunc', math.trunc, 'math.trunc()'),
+    _OpData('floor', math.floor, 'math.floor()'),
+    _OpData('ceil', math.ceil, 'math.ceil()'),
 ]
 OPERATORS_DICT = {data.name: data for data in OPERATOR_DATA}
 SUPPORTED_OPERATORS = [data.name for data in OPERATOR_DATA]
@@ -69,7 +69,7 @@ SUPPORTED_OPERATORS = [data.name for data in OPERATOR_DATA]
 
 @overload
 def opfunc(
-    func: None,
+    func: None = ...,
     *,
     include: str | Sequence[str] | None = ...,
     exclude: str | Sequence[str] | None = ...,
@@ -94,13 +94,12 @@ def opfunc(
     exclude: str | Sequence[str] | None = None,
     custom_ops: Mapping[str, CustomOpBuilder] | None = None,
 ) -> _OpFunc[FuncParams, T] | Callable[[Func], _OpFunc[FuncParams, T]]:
-    """
-    Wraps or decorates a function, enabling operator usage
-    on the function (e.g. ``+``, ``*``, etc.). Allowed operators can
-    be restricted using the *include* and *exclude* parameters.
-    The full list of supported operators can be found in
-    ``opfuncs.SUPPORTED_OPERATORS``. Functions wrapped with opfunc
-    can also be composed with other opfuncs or callables using square
+    """Wraps or decorates a function, enabling operator usage on the
+    function (e.g. ``+``, ``*``, etc.). Allowed operators can be
+    restricted using the *include* and *exclude* parameters. The full
+    list of supported operators can be found in
+    ``opfuncs.SUPPORTED_OPERATORS``. Functions wrapped with opfunc can
+    also be composed with other opfuncs or callables using square
     brackets ('``[]``'). The *custom_ops* parameter can be specified
     to use custom operators in place of the standard operators.
 
@@ -267,116 +266,116 @@ class _OpFunc(Generic[FuncParams, T]):
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("and", other)
+        return self._operate('and', other)
 
     def __or__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("or", other)
+        return self._operate('or', other)
 
     def __xor__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("xor", other)
+        return self._operate('xor', other)
 
     def __add__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("add", other)
+        return self._operate('add', other)
 
     def __sub__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("sub", other)
+        return self._operate('sub', other)
 
     def __mul__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("mul", other)
+        return self._operate('mul', other)
 
     def __matmul__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("matmul", other)
+        return self._operate('matmul', other)
 
     def __truediv__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("truediv", other)
+        return self._operate('truediv', other)
 
     def __floordiv__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("floordiv", other)
+        return self._operate('floordiv', other)
 
     def __mod__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("mod", other)
+        return self._operate('mod', other)
 
     def __divmod__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("divmod", other)
+        return self._operate('divmod', other)
 
     def __pow__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
         modulo: int | None = None,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("pow", other, modulo)
+        return self._operate('pow', other, modulo)
 
     def __lshift__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("lshift", other)
+        return self._operate('lshift', other)
 
     def __rshift__(
         self,
         other: _OpFunc[FuncParams, T] | Func,
     ) -> _OpFunc[FuncParams, T]:
-        return self._operate("rshift", other)
+        return self._operate('rshift', other)
 
     def __neg__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("neg")
+        return self._operate('neg')
 
     def __pos__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("pos")
+        return self._operate('pos')
 
     def __abs__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("abs")
+        return self._operate('abs')
 
     def __invert__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("invert")
+        return self._operate('invert')
 
     def __round__(self, n: int | None = None) -> _OpFunc[FuncParams, T]:
-        return self._operate("round", None, n)
+        return self._operate('round', None, n)
 
     def __trunc__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("trunc")
+        return self._operate('trunc')
 
     def __floor__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("floor")
+        return self._operate('floor')
 
     def __ceil__(self) -> _OpFunc[FuncParams, T]:
-        return self._operate("ceil")
+        return self._operate('ceil')
 
     def __getitem__(self, __func: int | Callable, /) -> _OpFunc[FuncParams, T]:
         if not isinstance(__func, int) and not callable(__func):
             raise TypeError(
                 f"cannot compose opfunc {self._func.__name__!r} with "
-                f"{__func.__class__.__name__!r} object {__func!r}."
+                f"{__func.__class__.__name__!r} object {__func!r}.",
             )
 
         if not isinstance(__func, int):
@@ -386,7 +385,7 @@ class _OpFunc(Generic[FuncParams, T]):
             raise ValueError(
                 f"invalid integer input for opfunc composition of "
                 f"{self._func.__name__!r}: {__func}. Expected a "
-                f"positive integer."
+                f"positive integer.",
             )
 
         _opfunc = self
@@ -472,7 +471,7 @@ class _OpFunc(Generic[FuncParams, T]):
             cls_name = (
                 other_func.__class__.__name__
                 if isinstance(other_func, _OpFunc)
-                else "function"
+                else 'function'
             )
             type_error_text += f" and {cls_name!r} ({other_name!r})"
 
@@ -503,8 +502,8 @@ class _OpFuncSettings(NamedTuple):
         )
 
     def merge_settings(self, settings: _OpFuncSettings) -> _OpFuncSettings:
-        include = _merge_tuples(self.include, settings.include, "intersection")
-        exclude = _merge_tuples(self.exclude, settings.exclude, "union")
+        include = _merge_tuples(self.include, settings.include, 'intersection')
+        exclude = _merge_tuples(self.exclude, settings.exclude, 'union')
         custom_ops = _merge_dicts(self.custom_ops, settings.custom_ops)
 
         return _OpFuncSettings(
@@ -596,22 +595,16 @@ def _to_tuple(items: str | Sequence[str] | None) -> tuple[str, ...] | None:
 def _merge_tuples(
     a: tuple[str, ...] | None,
     b: tuple[str, ...] | None,
-    merge: Literal["union", "intersection"],
+    merge: Literal['union', 'intersection'],
 ) -> tuple[str, ...] | None:
     if a is None or b is None:
         return a if a is not None else b
 
-    if merge == "union":
+    if merge == 'union':
         return tuple(set(a).union(b))
 
-    if merge == "intersection":
+    if merge == 'intersection':
         return tuple(set(a).intersection(b))
-
-    raise ValueError(
-        "this error should be unreachable: parameter "
-        "`merge` was specified as a string other than "
-        "'union' or 'intersection'."
-    )
 
 
 def _merge_dicts(
@@ -636,5 +629,5 @@ def _verify_mutually_exclusive(
 
     raise ValueError(
         f"cannot create opfunc with operators "
-        f"{intersection!r} both included and excluded."
+        f"{intersection!r} both included and excluded.",
     )

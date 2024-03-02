@@ -167,9 +167,9 @@ def vector_custom_ops():
         return round_op
 
     return {
-        "mul": dot_product_op_builder,
-        "matmul": cross_product_op_builder,
-        "round": round_op_builder,
+        'mul': dot_product_op_builder,
+        'matmul': cross_product_op_builder,
+        'round': round_op_builder,
     }
 
 
@@ -180,28 +180,28 @@ def vector_custom_ops():
 
 def test_supported_operators():
     assert set(SUPPORTED_OPERATORS) == {
-        "and",
-        "or",
-        "xor",
-        "add",
-        "sub",
-        "mul",
-        "matmul",
-        "truediv",
-        "floordiv",
-        "mod",
-        "divmod",
-        "pow",
-        "lshift",
-        "rshift",
-        "neg",
-        "pos",
-        "abs",
-        "invert",
-        "round",
-        "trunc",
-        "floor",
-        "ceil",
+        'and',
+        'or',
+        'xor',
+        'add',
+        'sub',
+        'mul',
+        'matmul',
+        'truediv',
+        'floordiv',
+        'mod',
+        'divmod',
+        'pow',
+        'lshift',
+        'rshift',
+        'neg',
+        'pos',
+        'abs',
+        'invert',
+        'round',
+        'trunc',
+        'floor',
+        'ceil',
     }
 
 
@@ -212,32 +212,32 @@ def test_wrapping(add_5, times_3, polynomial):
     # in the test case with the return values of the fixtures.
 
     assert opfunc(add_5)
-    assert opfunc(add_5).__name__ == add_5.__name__ == "_add_5"
+    assert opfunc(add_5).__name__ == add_5.__name__ == '_add_5'
     assert opfunc(add_5)(4) == add_5(4) == 9
 
     assert opfunc()(times_3)
-    assert opfunc()(times_3).__name__ == times_3.__name__ == "_times_3"
+    assert opfunc()(times_3).__name__ == times_3.__name__ == '_times_3'
     assert opfunc()(times_3)(2.5) == times_3(2.5) == 7.5
 
     assert opfunc(opfunc(polynomial))
-    assert opfunc(opfunc(polynomial)).__name__ == polynomial.__name__ == "_polynomial"
+    assert opfunc(opfunc(polynomial)).__name__ == polynomial.__name__ == '_polynomial'
     assert opfunc(opfunc(polynomial))(-3) == polynomial(-3) == 0
 
 
 def test_decorator():
     @opfunc
     def prefix_hello(s: str) -> str:
-        return "Hello " + s
+        return 'Hello ' + s
 
-    assert prefix_hello.__name__ == "prefix_hello"
-    assert prefix_hello("World") == "Hello World"
+    assert prefix_hello.__name__ == 'prefix_hello'
+    assert prefix_hello('World') == 'Hello World'
 
     @opfunc()
     def remove_e(s: str) -> str:
-        return s.replace("e", "")
+        return s.replace('e', '')
 
-    assert remove_e.__name__ == "remove_e"
-    assert remove_e("Welcome!") == "Wlcom!"
+    assert remove_e.__name__ == 'remove_e'
+    assert remove_e('Welcome!') == 'Wlcom!'
 
 
 def test_and_operator(only_evens, less_than_7, perfect_squares):
@@ -253,7 +253,7 @@ def test_and_operator(only_evens, less_than_7, perfect_squares):
     assert (func2 := opfunc_less_than_7 & perfect_squares)
     assert func2(s) == {1, 4}
 
-    error_text = "unsupported operand type(s) for &: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for &: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         only_evens & opfunc_perfect_squares
@@ -272,7 +272,7 @@ def test_or_operator(only_evens, less_than_7, perfect_squares):
     assert (func2 := opfunc_perfect_squares | only_evens)
     assert func2(s) == {1, 2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
 
-    error_text = "unsupported operand type(s) for |: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for |: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         less_than_7 | opfunc_only_evens
@@ -291,7 +291,7 @@ def test_xor_operator(only_evens, less_than_7, perfect_squares):
     assert (func2 := opfunc_only_evens ^ less_than_7)
     assert func2(s) == {1, 3, 5, 8, 10, 12, 14, 16, 18, 20}
 
-    error_text = "unsupported operand type(s) for ^: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for ^: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         perfect_squares ^ opfunc_less_than_7
@@ -308,7 +308,7 @@ def test_add_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_times_3 + polynomial)
     assert func2(3) == 21
 
-    error_text = "unsupported operand type(s) for +: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for +: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         add_5 + opfunc_polynomial
@@ -325,7 +325,7 @@ def test_sub_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_polynomial - add_5)
     assert func2(3) == 4
 
-    error_text = "unsupported operand type(s) for -: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for -: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         times_3 - opfunc_add_5
@@ -342,7 +342,7 @@ def test_mul_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_add_5 * times_3)
     assert func2(3) == 72
 
-    error_text = "unsupported operand type(s) for *: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for *: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         polynomial * opfunc_times_3
@@ -363,7 +363,7 @@ def test_matmul_operator(np_transpose, np_add_matrix, np_fill_diag):
     assert (func2 := opfunc_np_add_matrix @ np_fill_diag)
     assert np.array_equal(func2(matrix), np.array([[1, 7], [-4, 8]]))
 
-    error_text = "unsupported operand type(s) for @: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for @: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         np_transpose @ opfunc_np_fill_diag
@@ -380,7 +380,7 @@ def test_truediv_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_times_3 / polynomial)
     assert func2(3) == 0.75
 
-    error_text = "unsupported operand type(s) for /: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for /: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         add_5 / opfunc_polynomial
@@ -397,7 +397,7 @@ def test_floordiv_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_polynomial // times_3)
     assert func2(3) == 1
 
-    error_text = "unsupported operand type(s) for //: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for //: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         add_5 // opfunc_times_3
@@ -414,7 +414,7 @@ def test_mod_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_times_3 % add_5)
     assert func2(3) == 1
 
-    error_text = "unsupported operand type(s) for %: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for %: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         polynomial % opfunc_add_5
@@ -431,7 +431,7 @@ def test_divmod_operator(add_5, times_3, polynomial):
     assert (func2 := divmod(opfunc_times_3, add_5))
     assert func2(3) == (1, 1)
 
-    error_text = "unsupported operand type(s) for divmod(): " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for divmod(): ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         divmod(polynomial, opfunc_add_5)
@@ -461,19 +461,19 @@ def test_pow_operator(add_5, times_3, polynomial):
     assert func3(-3) == 4
 
     error_text = (
-        "unsupported operand type(s) for ** or pow(): " "'function' and '_OpFunc'"
+        'unsupported operand type(s) for ** or pow(): ' "'function' and '_OpFunc'"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         times_3**opfunc_polynomial
 
     error_text = (
-        "unsupported operand type(s) for ** or pow(): " "'function' and '_OpFunc'"
+        'unsupported operand type(s) for ** or pow(): ' "'function' and '_OpFunc'"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         pow(times_3, opfunc_polynomial)
 
     error_text = (
-        "unsupported operand type(s) for ** or pow(): " "'function', '_OpFunc', 'int'"
+        'unsupported operand type(s) for ** or pow(): ' "'function', '_OpFunc', 'int'"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         pow(times_3, opfunc_polynomial, 6)
@@ -490,7 +490,7 @@ def test_lshift_operator(add_5, times_3, polynomial):
     assert (func2 := opfunc_add_5 << times_3)
     assert func2(3) == 4096
 
-    error_text = "unsupported operand type(s) for <<: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for <<: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         polynomial << opfunc_times_3
@@ -507,7 +507,7 @@ def test_rshift_operator(floordiv_by_4, times_3, polynomial):
     assert (func2 := opfunc_times_3 >> floordiv_by_4)
     assert func2(4) == 6
 
-    error_text = "unsupported operand type(s) for >>: " "'function' and '_OpFunc'"
+    error_text = 'unsupported operand type(s) for >>: ' "'function' and '_OpFunc'"
 
     with pytest.raises(TypeError, match=re.escape(error_text)):
         times_3 >> opfunc_polynomial
@@ -633,11 +633,47 @@ def test_ceil_operator(add_5, times_3, polynomial):
     assert func3(-2.5) == -1
 
 
+def test_composition(add_5, times_3, polynomial):
+    opfunc_add_5 = opfunc(add_5)
+    opfunc_times_3 = opfunc(times_3)
+    opfunc_polynomial = opfunc(polynomial)
+
+    assert (func1 := opfunc_add_5[opfunc_times_3])
+    assert func1(3) == 14
+
+    assert (func2 := opfunc_polynomial[times_3])
+    assert func2(4) == 165
+
+    assert (func3 := opfunc_times_3[3])
+    assert func3(5) == 135
+
+    error_text = (
+        "cannot compose opfunc '_add_5' with 'slice' object "
+        'slice(1, 4, None)'
+    )
+    with pytest.raises(TypeError, match=re.escape(error_text)):
+        opfunc_add_5[1:4]
+
+    error_text = (
+        'invalid integer input for opfunc composition of '
+        "'_add_5': -2. Expected a positive integer."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc_add_5[-2]
+
+    error_text = (
+        'invalid integer input for opfunc composition of '
+        "'_add_5': 0. Expected a positive integer."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc_add_5[0]
+
+
 def test_include(only_evens, less_than_7, perfect_squares):
-    opfunc_less_than_7_and = opfunc(less_than_7, include="and")
-    opfunc_less_than_7_or = opfunc(less_than_7, include="or")
-    opfunc_only_evens = opfunc(only_evens, include=["and", "or"])
-    opfunc_perfect_squares = opfunc(perfect_squares, include="or")
+    opfunc_less_than_7_and = opfunc(less_than_7, include='and')
+    opfunc_less_than_7_or = opfunc(less_than_7, include='or')
+    opfunc_only_evens = opfunc(only_evens, include=['and', 'or'])
+    opfunc_perfect_squares = opfunc(perfect_squares, include='or')
 
     # checks that operators do not raise a TypeError for
     # valid operations between two opfuncs that specify
@@ -660,42 +696,42 @@ def test_include(only_evens, less_than_7, perfect_squares):
     # list are considered.
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_only_evens') and '_OpFunc' ('_less_than_7')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_only_evens | opfunc_less_than_7_and
 
     error_text = (
-        "unsupported operand type(s) for &: "
+        'unsupported operand type(s) for &: '
         "'_OpFunc' ('_less_than_7') and '_OpFunc' ('_perfect_squares')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_less_than_7_and & opfunc_perfect_squares
 
     error_text = (
-        "unsupported operand type(s) for &: "
+        'unsupported operand type(s) for &: '
         "'_OpFunc' ('_perfect_squares') and '_OpFunc' ('_less_than_7')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_perfect_squares & opfunc_less_than_7_and
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_perfect_squares') and '_OpFunc' ('_less_than_7')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_perfect_squares | opfunc_less_than_7_and
 
     error_text = (
-        "unsupported operand type(s) for ^: "
+        'unsupported operand type(s) for ^: '
         "'_OpFunc' ('_less_than_7') and 'function' ('_only_evens')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_less_than_7_and ^ only_evens
 
     error_text = (
-        "unsupported operand type(s) for ^: "
+        'unsupported operand type(s) for ^: '
         "'_OpFunc' ('_less_than_7') and '_OpFunc' ('_only_evens')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
@@ -714,10 +750,10 @@ def test_include(only_evens, less_than_7, perfect_squares):
 
 
 def test_exclude(less_than_7, only_evens, perfect_squares):
-    opfunc_less_than_7_not_or = opfunc(less_than_7, exclude="or")
-    opfunc_less_than_7_not_and = opfunc(less_than_7, exclude="and")
-    opfunc_only_evens = opfunc(only_evens, exclude=["or", "xor"])
-    opfunc_perfect_squares = opfunc(perfect_squares, exclude="or")
+    opfunc_less_than_7_not_or = opfunc(less_than_7, exclude='or')
+    opfunc_less_than_7_not_and = opfunc(less_than_7, exclude='and')
+    opfunc_only_evens = opfunc(only_evens, exclude=['or', 'xor'])
+    opfunc_perfect_squares = opfunc(perfect_squares, exclude='or')
 
     # checks that operators do not raise a TypeError for
     # valid operations between two opfuncs that specify
@@ -740,35 +776,35 @@ def test_exclude(less_than_7, only_evens, perfect_squares):
     # list are considered.
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_less_than_7') and 'function' ('_only_evens')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_less_than_7_not_or | only_evens
 
     error_text = (
-        "unsupported operand type(s) for ^: "
+        'unsupported operand type(s) for ^: '
         "'_OpFunc' ('_less_than_7') and '_OpFunc' ('_only_evens')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_less_than_7_not_or ^ opfunc_only_evens
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_less_than_7') and '_OpFunc' ('_perfect_squares')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_less_than_7_not_or | opfunc_perfect_squares
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_perfect_squares') and '_OpFunc' ('_less_than_7')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_perfect_squares | opfunc_less_than_7_not_and
 
     error_text = (
-        "unsupported operand type(s) for |: "
+        'unsupported operand type(s) for |: '
         "'_OpFunc' ('_less_than_7') and '_OpFunc' ('_perfect_squares')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
@@ -780,6 +816,40 @@ def test_exclude(less_than_7, only_evens, perfect_squares):
     func = opfunc_less_than_7_not_or ^ opfunc_perfect_squares
     with pytest.raises(TypeError):
         func ^ opfunc_only_evens
+
+
+def test_include_and_exclude(less_than_7, only_evens, perfect_squares):
+    # checks that a ValueError is raised if the user
+    # tries to create an opfunc with the same operator
+    # specified in 'include' and 'exclude'
+
+    error_text = (
+        'cannot create opfunc with operators '
+        "{'and'} both included and excluded."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc(less_than_7, include='and', exclude='and')
+
+    error_text = (
+        'cannot create opfunc with operators '
+        "{'or'} both included and excluded."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc(only_evens, include='or', exclude=['or', 'xor'])
+
+    error_text = (
+        'cannot create opfunc with operators '
+        "{'xor'} both included and excluded."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc(perfect_squares, include=['and', 'xor'], exclude='xor')
+
+    error_text = (
+        'cannot create opfunc with operators '
+        "{'or'} both included and excluded."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_text)):
+        opfunc(less_than_7, include=['or', 'xor'], exclude=['and', 'or'])
 
 
 def test_custom_ops(double_vec, invert_z, swap_x_and_y, vector_custom_ops):
@@ -794,14 +864,14 @@ def test_custom_ops(double_vec, invert_z, swap_x_and_y, vector_custom_ops):
     assert func((2.1429548, -3.423477, 4.62)) == (2.143, -3.423, -4.62)
 
     error_text = (
-        "unsupported operand type(s) for custom @: "
+        'unsupported operand type(s) for custom @: '
         "'_OpFunc' ('_swap_x_and_y') and '_OpFunc' ('_double_vec')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
         opfunc_swap_x_and_y @ opfunc(double_vec)
 
     error_text = (
-        "unsupported operand type(s) for custom @: "
+        'unsupported operand type(s) for custom @: '
         "'_OpFunc' ('_double_vec') and '_OpFunc' ('_swap_x_and_y')"
     )
     with pytest.raises(TypeError, match=re.escape(error_text)):
