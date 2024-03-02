@@ -213,8 +213,8 @@ def opfunc(
 
     :param custom_ops: (optional) A mapping of operator names to
                        functions that build custom operators. The
-                       build custom operators will be used in place
-                       of the respective standard operator.
+                       built custom operators will be used in place
+                       of their respective standard operators.
 
     :return: Wrapped function that can use python's standard
              operators.
