@@ -1,0 +1,39 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.2.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
+  - id: double-quote-string-fixer
+  - id: file-contents-sorter
+    files: 'requirements(|-dev).txt'
+- repo: https://github.com/asottile/add-trailing-comma
+  rev: v3.1.0
+  hooks:
+  - id: add-trailing-comma
+- repo: https://github.com/asottile/setup-cfg-fmt
+  rev: v2.5.0
+  hooks:
+  - id: setup-cfg-fmt
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.8.0
+  hooks:
+  - id: mypy
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.3.0
+  hooks:
+  - id: ruff
+    args: [--fix, opfuncs/_opfunc.py]
+    exclude: '__init__.py$'
+- repo: https://github.com/PyCQA/docformatter
+  rev: v1.7.5
+  hooks:
+  - id: docformatter
+    args: [
+      --wrap-summaries, '70',
+      --wrap-descriptions, '70',
+      --in-place,
+      opfuncs/_opfunc.py
+    ]
