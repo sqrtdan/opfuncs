@@ -127,11 +127,11 @@ def vector_custom_ops():
         func1: Callable[[Vector3D], Vector3D],
         func2: Callable[[Vector3D], Vector3D],
     ) -> Callable[[Vector3D], float]:
-        def dot_product_op(a: Vector3D) -> int:
+        def dot_product_op(a: Vector3D) -> float:
             a1 = func1(a)
             a2 = func2(a)
 
-            return sum(a1[i] * a2[i] for i in range(3))
+            return math.fsum(a1[i] * a2[i] for i in range(3))
 
         return dot_product_op
 

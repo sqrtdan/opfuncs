@@ -10,6 +10,7 @@ import math
 import operator
 from collections.abc import Callable
 from collections.abc import Sequence
+from typing import Concatenate
 from typing import Generic
 from typing import Literal
 from typing import NamedTuple
@@ -24,41 +25,51 @@ T = TypeVar("T")
 
 Func = Callable[FuncParams, T]
 
-UnaryOpBuilder = Callable[[Func, OpParams], Func]
-BinaryOpBuilder = Callable[[Func, Func, OpParams], Func]
+UnaryOpBuilder = Callable[Concatenate[Func, OpParams], Func]
+BinaryOpBuilder = Callable[Concatenate[Func, Func, OpParams], Func]
 CustomOpBuilder = UnaryOpBuilder | BinaryOpBuilder
 
+UnaryOperator = Callable[Concatenate[T, OpParams], T]
+BinaryOperator = Callable[Concatenate[T, T, OpParams], T]
+
+
+class _OpData(NamedTuple):
+    name: str
+    op: UnaryOperator | BinaryOperator
+    symbol: str
+
+
 OPERATOR_DATA = [
-    {"name": "and", "op": operator.and_, "symbol": "&"},
-    {"name": "or", "op": operator.or_, "symbol": "|"},
-    {"name": "xor", "op": operator.xor, "symbol": "^"},
-    {"name": "add", "op": operator.add, "symbol": "+"},
-    {"name": "sub", "op": operator.sub, "symbol": "-"},
-    {"name": "mul", "op": operator.mul, "symbol": "*"},
-    {"name": "matmul", "op": operator.matmul, "symbol": "@"},
-    {"name": "truediv", "op": operator.truediv, "symbol": "/"},
-    {"name": "floordiv", "op": operator.floordiv, "symbol": "//"},
-    {"name": "mod", "op": operator.mod, "symbol": "%"},
-    {"name": "divmod", "op": divmod, "symbol": "divmod()"},
-    {"name": "pow", "op": pow, "symbol": "**"},
-    {"name": "lshift", "op": operator.lshift, "symbol": "<<"},
-    {"name": "rshift", "op": operator.rshift, "symbol": ">>"},
-    {"name": "neg", "op": operator.neg, "symbol": "-()"},
-    {"name": "pos", "op": operator.pos, "symbol": "+()"},
-    {"name": "abs", "op": operator.abs, "symbol": "abs()"},
-    {"name": "invert", "op": operator.invert, "symbol": "~"},
-    {"name": "round", "op": round, "symbol": "round()"},
-    {"name": "trunc", "op": math.trunc, "symbol": "math.trunc()"},
-    {"name": "floor", "op": math.floor, "symbol": "math.floor()"},
-    {"name": "ceil", "op": math.ceil, "symbol": "math.ceil()"},
+    _OpData("and", operator.and_, "&"),
+    _OpData("or", operator.or_, "|"),
+    _OpData("xor", operator.xor, "^"),
+    _OpData("add", operator.add, "+"),
+    _OpData("sub", operator.sub, "-"),
+    _OpData("mul", operator.mul, "*"),
+    _OpData("matmul", operator.matmul, "@"),
+    _OpData("truediv", operator.truediv, "/"),
+    _OpData("floordiv", operator.floordiv, "//"),
+    _OpData("mod", operator.mod, "%"),
+    _OpData("divmod", divmod, "divmod()"),
+    _OpData("pow", pow, "** or pow()"),
+    _OpData("lshift", operator.lshift, "<<"),
+    _OpData("rshift", operator.rshift, ">>"),
+    _OpData("neg", operator.neg, "-()"),
+    _OpData("pos", operator.pos, "+()"),
+    _OpData("abs", operator.abs, "abs()"),
+    _OpData("invert", operator.invert, "~"),
+    _OpData("round", round, "round()"),
+    _OpData("trunc", math.trunc, "math.trunc()"),
+    _OpData("floor", math.floor, "math.floor()"),
+    _OpData("ceil", math.ceil, "math.ceil()"),
 ]
-OPERATORS = {data["name"]: data for data in OPERATOR_DATA}
-SUPPORTED_OPERATORS = [data["name"] for data in OPERATOR_DATA]
+OPERATORS_DICT = {data.name: data for data in OPERATOR_DATA}
+SUPPORTED_OPERATORS = [data.name for data in OPERATOR_DATA]
 
 
 @overload
 def opfunc(
-    func: None = ...,
+    func: None,
     *,
     include: str | Sequence[str] | None = ...,
     exclude: str | Sequence[str] | None = ...,
@@ -68,7 +79,7 @@ def opfunc(
 
 @overload
 def opfunc(
-    func: Func = ...,
+    func: Func,
     *,
     include: str | Sequence[str] | None = ...,
     exclude: str | Sequence[str] | None = ...,
@@ -211,7 +222,7 @@ def opfunc(
     """
     if func is None:
 
-        def _opfunc(__func: Func, /):
+        def _opfunc_partial(__func: Func, /):
             return opfunc(
                 __func,
                 include=include,
@@ -219,7 +230,7 @@ def opfunc(
                 custom_ops=custom_ops,
             )
 
-        return _opfunc
+        return _opfunc_partial
 
     settings = _OpFuncSettings.new(
         include=include,
@@ -230,7 +241,7 @@ def opfunc(
     if isinstance(func, _OpFunc):
         func = func._func
 
-    _opfunc = _OpFunc(func, settings)
+    _opfunc: _OpFunc[FuncParams, T] = _OpFunc(func, settings)
     _opfunc = functools.wraps(func)(_opfunc)
 
     return _opfunc
@@ -240,7 +251,7 @@ class _OpFunc(Generic[FuncParams, T]):
     def __init__(
         self,
         func: Func,
-        settings: _OpFuncSettings[FuncParams, T],
+        settings: _OpFuncSettings,
     ):
         self._func = func
         self._settings = settings
@@ -406,11 +417,9 @@ class _OpFunc(Generic[FuncParams, T]):
         if isinstance(other, _OpFunc):
             merged_settings = self._settings.merge_settings(other._settings)
             other_custom_ops = other._settings.custom_ops
-            other_func = other._func
         else:
             merged_settings = self._settings
             other_custom_ops = {}
-            other_func = other
 
         if not merged_settings.operator_is_enabled(op_name):
             self._raise_type_error(op_name, other)
@@ -423,7 +432,9 @@ class _OpFunc(Generic[FuncParams, T]):
         ) and op_name not in merged_custom_ops:
             self._raise_type_error(op_name, other, used_custom_op=True)
 
-        if other is None:
+        other_func = other._func if isinstance(other, _OpFunc) else other
+
+        if other_func is None:
             return merged_settings.get_unary_opfunc(
                 op_name,
                 self._func,
@@ -446,7 +457,7 @@ class _OpFunc(Generic[FuncParams, T]):
         used_custom_op: bool = False,
     ):
         self_name = self._func.__name__
-        symbol = OPERATORS[op_name]["symbol"]
+        symbol = OPERATORS_DICT[op_name].symbol
 
         if used_custom_op:
             symbol = f"custom {symbol}"
@@ -468,7 +479,7 @@ class _OpFunc(Generic[FuncParams, T]):
         raise TypeError(type_error_text)
 
 
-class _OpFuncSettings(NamedTuple, Generic[FuncParams, T]):
+class _OpFuncSettings(NamedTuple):
     include: tuple[str, ...] | None
     exclude: tuple[str, ...] | None
     custom_ops: dict[str, CustomOpBuilder]
@@ -520,14 +531,15 @@ class _OpFuncSettings(NamedTuple, Generic[FuncParams, T]):
         **op_kwargs,
     ) -> _OpFunc[FuncParams, T]:
         if op_name in self.custom_ops:
-            func = self.custom_ops[op_name](func1, func2, *op_args, **op_kwargs)
+            func_builder: BinaryOpBuilder = self.custom_ops[op_name]
+            func = func_builder(func1, func2, *op_args, **op_kwargs)
         else:
 
             def binary_func(
                 *args: FuncParams.args,
                 **kwargs: FuncParams.kwargs,
             ) -> T:
-                return OPERATORS[op_name]["op"](
+                return OPERATORS_DICT[op_name].op(
                     func1(*args, **kwargs),
                     func2(*args, **kwargs),
                     *op_args,
@@ -549,14 +561,15 @@ class _OpFuncSettings(NamedTuple, Generic[FuncParams, T]):
         **op_kwargs: OpParams.kwargs,
     ) -> _OpFunc[FuncParams, T]:
         if op_name in self.custom_ops.keys():
-            func_ = self.custom_ops[op_name](func, *op_args, **op_kwargs)
+            func_builder: UnaryOpBuilder = self.custom_ops[op_name]
+            func_ = func_builder(func, *op_args, **op_kwargs)
         else:
 
             def unary_func(
                 *args: FuncParams.args,
                 **kwargs: FuncParams.kwargs,
             ) -> T:
-                return OPERATORS[op_name]["op"](
+                return OPERATORS_DICT[op_name].op(
                     func(*args, **kwargs),
                     *op_args,
                     **op_kwargs,
